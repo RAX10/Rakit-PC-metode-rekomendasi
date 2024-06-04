@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PC Recommendation</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <img src="...\static\images\logo rakit pc.png" alt="Rakit PC Logo" />
+      </div>
+      <nav>
+        <button class="login-btn">Login</button>
+        <button class="signup-btn">Signup</button>
+      </nav>
+    </header>
+    <form action="/" method="post">
+      <label for="budget">Total Budget:</label>
+      <input type="number" id="budget" name="budget" required />
+      {% for component in components %}
+      <label for="{{ component }}">{{ component }} Allocation (%):</label>
+      <input
+        type="number"
+        id="{{ component }}"
+        name="{{ component }}"
+        required
+      />
+      {% endfor %}
+
+      <button type="submit">Get Recommendations</button>
+    </form>
+
+    {% if recommendations %}
+    <h2>Recommended Components</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Brand</th>
+          <th>Specifications</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for comp, part in recommendations.items() %}
+        <tr>
+          <td>{{ comp }}</td>
+          <td>{{ part['Brand'] }}</td>
+          <td>{{ part['Specifications'] }}</td>
+          <td>{{ part['Price'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </body>
+</html>
