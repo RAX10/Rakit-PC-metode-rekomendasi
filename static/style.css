@@ -1,9 +1,14 @@
+/* styles.css (tambahkan atau sesuaikan dengan yang sudah ada) */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background-color: #DFF5E1;
+    background-color: #DFF5E1; /* Latar belakang warna hijau muda */
+    display: flex;
+    flex-direction: column; /* Mengatur elemen body untuk menyusun elemen anak secara vertikal */
+    align-items: center;
+    min-height: 100vh; /* Tinggi minimal body sama dengan tinggi viewport */
 }
 
 header {
@@ -11,8 +16,9 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #fff; /* Latar belakang header warna putih */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Lebar header penuh */
 }
 
 .logo {
@@ -26,7 +32,7 @@ header {
 }
 
 nav button {
-    background-color: #1A202C;
+    background-color: #1A202C; /* Tombol warna biru tua */
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -36,31 +42,44 @@ nav button {
 }
 
 nav button.signup-btn {
-    background-color: #EDF2F7;
+    background-color: #EDF2F7; /* Tombol signup warna abu-abu muda */
     color: #1A202C;
 }
 
-/*main content*/
-
+/* Penataan formulir */
 form {
-    margin-bottom: 20px;
+    display: grid; /* Menggunakan grid untuk layout */
+    grid-template-columns: auto auto; /* Dua kolom dengan lebar otomatis */
+    gap: 10px; /* Jarak antar elemen 10px */
+    padding: 20px;
+    background-color: #fff; /* Latar belakang putih */
+    border-radius: 8px; /* Sudut membulat */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Efek bayangan */
+    width: 80%; /* Lebar formulir */
+    max-width: 800px; /* Lebar maksimum formulir */
+    margin-top: 20px;
 }
 
 label, input {
-    display: block;
-    margin-bottom: 10px;
+    margin-bottom: 5px; /* Jarak bawah elemen label dan input */
 }
 
+/* Penataan tabel */
 table {
-    width: 100%;
+    width: 80%;
     border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff; /* Latar belakang putih */
+    border-radius: 8px; /* Sudut membulat */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Efek bayangan */
 }
 
 th, td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 12px; /* Padding lebih besar */
+    text-align: left;
 }
 
 th {
-    background-color: #f2f2f2;
+    background-color: #f2f2f2; /* Latar belakang abu-abu muda untuk header */
 }
