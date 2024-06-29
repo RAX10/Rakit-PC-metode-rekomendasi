@@ -4,7 +4,7 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background-color: #DFF5E1; /* Latar belakang warna hijau muda */
+    background-color: #a7ecb6; /* Latar belakang warna hijau muda */
     display: flex;
     flex-direction: column; /* Mengatur elemen body untuk menyusun elemen anak secara vertikal */
     align-items: center;

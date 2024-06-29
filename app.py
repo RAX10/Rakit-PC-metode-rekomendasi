@@ -44,6 +44,44 @@ def index():
     if request.method == 'POST':
         budget = float(request.form['budget'])
         allocations = {comp: float(request.form[comp]) / 100 for comp in components}
+        kebutuhan = request.form.get('kebutuhan')
+
+        # Sesuaikan alokasi berdasarkan kebutuhan (contoh)
+        if kebutuhan == 'Gaming':
+            allocations['VGA'] += 0.15  # Tambah alokasi VGA untuk gaming (15%)
+            allocations['Processor'] += 0.10  # Tambah alokasi CPU untuk gaming (10%)
+            allocations['RAM'] += 0.05  # Tambah sedikit alokasi RAM untuk gaming (5%)
+
+        elif kebutuhan == 'Rendering/Editing Video':
+            allocations['Processor'] += 0.15  # Tambah alokasi CPU untuk rendering (15%)
+            allocations['RAM'] += 0.20  # Tambah alokasi RAM untuk rendering (20%)
+            allocations['SSD'] += 0.05  # Tambah sedikit alokasi SSD untuk penyimpanan file (5%)
+
+        elif kebutuhan == 'Desain Grafis':
+            allocations['VGA'] += 0.15  # Tambah alokasi VGA untuk desain grafis (15%)
+            allocations['Processor'] += 0.05  # Tambah sedikit alokasi CPU untuk desain grafis (5%)
+            allocations['Monitor'] = 0.10  # Alokasikan budget untuk monitor (10%)
+
+        elif kebutuhan == 'Programming/Coding':
+            allocations['Processor'] += 0.10  # Tambah alokasi CPU untuk programming (10%)
+            allocations['SSD'] += 0.05  # Tambah sedikit alokasi SSD untuk kecepatan (5%)
+            allocations['Monitor'] = 0.05  # Alokasikan sedikit budget untuk monitor (5%)
+
+        elif kebutuhan == 'Streaming':
+            allocations['Processor'] += 0.10  # Tambah alokasi CPU untuk streaming (10%)
+            allocations['VGA'] += 0.10  # Tambah alokasi VGA untuk streaming (10%)
+            allocations['RAM'] += 0.05  # Tambah sedikit alokasi RAM untuk streaming (5%)
+
+        elif kebutuhan == 'Office Work':
+            allocations['Processor'] -= 0.05  # Kurangi alokasi CPU untuk office (5%)
+            allocations['VGA'] -= 0.05  # Kurangi alokasi VGA untuk office (5%)
+            allocations['SSD'] += 0.10  # Tambah alokasi SSD untuk office (10%)
+
+        # Normalisasi alokasi agar totalnya tetap 100%
+        total_allocation = sum(allocations.values())
+        allocations = {comp: allocation / total_allocation for comp, allocation in allocations.items()}
+
+        # ... (hitung rekomendasi) ...
         
         data = read_excel()
         data = normalize_data(data)

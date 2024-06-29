@@ -25,15 +25,71 @@
     <form action="/" method="post">
       <label for="budget">Total Budget:</label>
       <input type="number" id="budget" name="budget" required />
-      {% for component in components %}
-      <label for="{{ component }}">{{ component }} Allocation (%):</label>
+      <label for="totalAllocation">Total Alokasi (%):</label>
+      <span id="remainingAllocation">100</span> {% for component in components
+      %}
+      <label for="{{ component }}Allocation"
+        >{{ component }} Allocation (%):</label
+      >
       <input
         type="number"
-        id="{{ component }}"
+        id="{{ component }}Allocation"
         name="{{ component }}"
         required
       />
       {% endfor %}
+      <fieldset>
+        <legend>Kebutuhan Utama:</legend>
+        <div>
+          <input type="radio" id="gaming" name="kebutuhan" value="Gaming" />
+          <label for="gaming">Gaming</label>
+        </div>
+        <div>
+          <input
+            type="radio"
+            id="rendering"
+            name="kebutuhan"
+            value="Rendering/Editing Video"
+          />
+          <label for="rendering">Rendering/Editing Video</label>
+        </div>
+        <div>
+          <input
+            type="radio"
+            id="desain"
+            name="kebutuhan"
+            value="Desain Grafis"
+          />
+          <label for="desain">Desain Grafis</label>
+        </div>
+        <div>
+          <input
+            type="radio"
+            id="programming"
+            name="kebutuhan"
+            value="Programming/Coding"
+          />
+          <label for="programming">Programming/Coding</label>
+        </div>
+        <div>
+          <input
+            type="radio"
+            id="streaming"
+            name="kebutuhan"
+            value="Streaming"
+          />
+          <label for="streaming">Streaming</label>
+        </div>
+        <div>
+          <input
+            type="radio"
+            id="office"
+            name="kebutuhan"
+            value="Office Work"
+          />
+          <label for="office">Office Work</label>
+        </div>
+      </fieldset>
       <button type="submit">Get Recommendations</button>
     </form>
 
@@ -60,5 +116,39 @@
       </tbody>
     </table>
     {% endif %}
+    <script>
+      const allocationInputs = document.querySelectorAll('[id$="Allocation"]');
+      const remainingAllocationSpan = document.getElementById(
+        "remainingAllocation"
+      );
+      let totalAllocation = 100; // Alokasi awal
+
+      allocationInputs.forEach((input) => {
+        input.addEventListener("input", () => {
+          let usedAllocation = 0;
+          allocationInputs.forEach((input) => {
+            usedAllocation += parseInt(input.value) || 0;
+          });
+
+          // Validasi total alokasi
+          if (usedAllocation > totalAllocation) {
+            // Jika melebihi 100%, atur kembali ke 100% dan tampilkan pesan
+            remainingAllocationSpan.textContent = 0;
+            alert("Total alokasi tidak boleh melebihi 100%");
+            input.value =
+              parseInt(input.value) - (usedAllocation - totalAllocation); // Kembalikan nilai input
+          } else if (usedAllocation < 0) {
+            // Jika kurang dari 0%, atur kembali ke 0% dan tampilkan pesan
+            remainingAllocationSpan.textContent = totalAllocation;
+            alert("Total alokasi tidak boleh kurang dari 0%");
+            input.value = 0; // Kembalikan nilai input
+          } else {
+            // Jika valid, tampilkan total alokasi yang tersisa
+            remainingAllocationSpan.textContent =
+              totalAllocation - usedAllocation;
+          }
+        });
+      });
+    </script>
   </body>
 </html>
