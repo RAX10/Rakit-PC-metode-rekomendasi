@@ -105,7 +105,7 @@ if submit_button:
             } for comp, part in recommendations.items()
         ])
         
-        # Menampilkan DataFrame dalam bentuk tabel
-        st.table(recommended_df)
+        # Menampilkan DataFrame dalam bentuk tabel tanpa index
+        st.table(recommended_df.style.hide(axis='index'))
     else:
         st.write("No suitable components found within the given budget and allocations.")
