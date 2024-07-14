@@ -42,9 +42,15 @@ recommendations = None
 with st.form(key='pc_form'):
     budget = st.number_input('Total Budget:', min_value=0, step=100, format="%d")
     allocations = {}
-    
+    total_allocation = 0
+
     for component in components:
-        allocations[component] = st.number_input(f'{component} Allocation (%):', min_value=0, max_value=100, step=1, format="%d") / 100
+        allocation = st.number_input(f'{component} Allocation (%):', min_value=0, max_value=100, step=1, format="%d")
+        allocations[component] = allocation / 100
+        total_allocation += allocation
+
+    sisa_alokasi = 100 - total_allocation
+    st.markdown(f'**Sisa Alokasi (%): {sisa_alokasi}**')
 
     kebutuhan = st.radio('Kebutuhan Utama:', ['Gaming', 'Rendering/Editing Video', 'Desain Grafis', 'Programming/Coding', 'Streaming', 'Office Work'])
     submit_button = st.form_submit_button(label='Get Recommendations')
