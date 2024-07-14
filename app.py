@@ -36,22 +36,25 @@ def recommend_components(budget, allocations, data):
 
 st.title('PC Recommendation')
 
-# Komponen
 components = ['Processor', 'Motherboard', 'RAM', 'SSD', 'VGA', 'PSU', 'Casing']
 recommendations = None
 
-# Form input
 with st.form(key='pc_form'):
-    budget = st.number_input('Total Budget:', min_value=0.0, step=100.0)
+    budget = st.number_input('Total Budget:', min_value=0, step=100, format="%d")
     allocations = {}
-    
+    total_allocation = 0
+
     for component in components:
-        allocations[component] = st.number_input(f'{component} Allocation (%):', min_value=0.0, max_value=100.0, step=5.0) / 100
+        allocation = st.number_input(f'{component} Allocation (%):', min_value=0, max_value=100, step=1, format="%d")
+        allocations[component] = allocation / 100
+        total_allocation += allocation
+
+    sisa_alokasi = 100 - total_allocation
+    st.markdown(f'**Sisa Alokasi (%): {sisa_alokasi}**')
 
     kebutuhan = st.radio('Kebutuhan Utama:', ['Gaming', 'Rendering/Editing Video', 'Desain Grafis', 'Programming/Coding', 'Streaming', 'Office Work'])
     submit_button = st.form_submit_button(label='Get Recommendations')
 
-# Adjust allocations based on needs
 if submit_button:
     if kebutuhan == 'Gaming':
         allocations['VGA'] += 0.15
@@ -83,7 +86,6 @@ if submit_button:
         allocations['VGA'] -= 0.05
         allocations['SSD'] += 0.10
 
-    # Normalisasi alokasi agar totalnya tetap 100%
     total_allocation = sum(allocations.values())
     allocations = {comp: allocation / total_allocation for comp, allocation in allocations.items()}
 
@@ -93,10 +95,26 @@ if submit_button:
 
     st.subheader('Recommended Components')
     if recommendations:
-        for comp, part in recommendations.items():
-            st.write(f"**{comp}:**")
-            st.write(f"Brand: {part['Brand']}")
-            st.write(f"Specifications: {part['Specifications']}")
-            st.write(f"Price: {part['Price']}")
+        # Membuat DataFrame dari rekomendasi
+        recommended_df = pd.DataFrame([
+            {
+                'Type': comp,
+                'Brand': part['Brand'],
+                'Specifications': part['Specifications'],
+                'Price': part['Price']
+            } for comp, part in recommendations.items()
+        ])
+        
+        # Menambahkan CSS untuk centering header
+        st.markdown("""
+            <style>
+            .centered-header th {
+                text-align: center !important;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        
+        # Menampilkan DataFrame dalam bentuk tabel tanpa index dengan header centered
+        st.write(recommended_df.to_html(index=False, classes='centered-header'), unsafe_allow_html=True)
     else:
         st.write("No suitable components found within the given budget and allocations.")
