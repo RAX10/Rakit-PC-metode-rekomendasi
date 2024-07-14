@@ -95,10 +95,17 @@ if submit_button:
 
     st.subheader('Recommended Components')
     if recommendations:
-        for comp, part in recommendations.items():
-            st.write(f"**{comp}:**")
-            st.write(f"Brand: {part['Brand']}")
-            st.write(f"Specifications: {part['Specifications']}")
-            st.write(f"Price: {part['Price']}")
+        # Membuat DataFrame dari rekomendasi
+        recommended_df = pd.DataFrame([
+            {
+                'Type': comp,
+                'Brand': part['Brand'],
+                'Specifications': part['Specifications'],
+                'Price': part['Price']
+            } for comp, part in recommendations.items()
+        ])
+        
+        # Menampilkan DataFrame dalam bentuk tabel
+        st.table(recommended_df)
     else:
         st.write("No suitable components found within the given budget and allocations.")
