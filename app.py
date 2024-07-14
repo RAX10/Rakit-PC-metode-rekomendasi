@@ -106,6 +106,6 @@ if submit_button:
         ])
         
         # Menampilkan DataFrame dalam bentuk tabel tanpa index
-        st.table(recommended_df.style.hide(axis='index'))
+        st.write(recommended_df.to_html(index=False), unsafe_allow_html=True)
     else:
         st.write("No suitable components found within the given budget and allocations.")
