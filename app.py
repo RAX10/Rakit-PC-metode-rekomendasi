@@ -105,7 +105,16 @@ if submit_button:
             } for comp, part in recommendations.items()
         ])
         
-        # Menampilkan DataFrame dalam bentuk tabel tanpa index
-        st.write(recommended_df.to_html(index=False), unsafe_allow_html=True)
+        # Menambahkan CSS untuk centering header
+        st.markdown("""
+            <style>
+            .centered-header th {
+                text-align: center !important;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        
+        # Menampilkan DataFrame dalam bentuk tabel tanpa index dengan header centered
+        st.write(recommended_df.to_html(index=False, classes='centered-header'), unsafe_allow_html=True)
     else:
         st.write("No suitable components found within the given budget and allocations.")
