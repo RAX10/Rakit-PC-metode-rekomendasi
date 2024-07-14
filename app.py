@@ -1,9 +1,7 @@
-from flask import Flask, render_template, request
+import streamlit as st
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from scipy.spatial.distance import cosine
-
-app = Flask(__name__, static_url_path='/static', static_folder='static')
 
 # Fungsi untuk membaca file Excel
 def read_excel():
@@ -36,58 +34,69 @@ def recommend_components(budget, allocations, data):
         recommended_components[comp] = best_part
     return recommended_components
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    components = ['Processor', 'Motherboard', 'RAM', 'SSD', 'VGA', 'PSU', 'Casing']
-    recommendations = None
+st.title('PC Recommendation')
 
-    if request.method == 'POST':
-        budget = float(request.form['budget'])
-        allocations = {comp: float(request.form[comp]) / 100 for comp in components}
-        kebutuhan = request.form.get('kebutuhan')
+# Komponen
+components = ['Processor', 'Motherboard', 'RAM', 'SSD', 'VGA', 'PSU', 'Casing']
+recommendations = None
 
-        # Sesuaikan alokasi berdasarkan kebutuhan (contoh)
-        if kebutuhan == 'Gaming':
-            allocations['VGA'] += 0.15  # Tambah alokasi VGA untuk gaming (15%)
-            allocations['Processor'] += 0.10  # Tambah alokasi CPU untuk gaming (10%)
-            allocations['RAM'] += 0.05  # Tambah sedikit alokasi RAM untuk gaming (5%)
+# Form input
+with st.form(key='pc_form'):
+    budget = st.number_input('Total Budget:', min_value=0.0, step=100.0)
+    allocations = {}
+    
+    for component in components:
+        allocations[component] = st.number_input(f'{component} Allocation (%):', min_value=0.0, max_value=100.0, step=5.0) / 100
 
-        elif kebutuhan == 'Rendering/Editing Video':
-            allocations['Processor'] += 0.15  # Tambah alokasi CPU untuk rendering (15%)
-            allocations['RAM'] += 0.20  # Tambah alokasi RAM untuk rendering (20%)
-            allocations['SSD'] += 0.05  # Tambah sedikit alokasi SSD untuk penyimpanan file (5%)
+    kebutuhan = st.radio('Kebutuhan Utama:', ['Gaming', 'Rendering/Editing Video', 'Desain Grafis', 'Programming/Coding', 'Streaming', 'Office Work'])
+    submit_button = st.form_submit_button(label='Get Recommendations')
 
-        elif kebutuhan == 'Desain Grafis':
-            allocations['VGA'] += 0.15  # Tambah alokasi VGA untuk desain grafis (15%)
-            allocations['Processor'] += 0.05  # Tambah sedikit alokasi CPU untuk desain grafis (5%)
-            allocations['Monitor'] = 0.10  # Alokasikan budget untuk monitor (10%)
+# Adjust allocations based on needs
+if submit_button:
+    if kebutuhan == 'Gaming':
+        allocations['VGA'] += 0.15
+        allocations['Processor'] += 0.10
+        allocations['RAM'] += 0.05
 
-        elif kebutuhan == 'Programming/Coding':
-            allocations['Processor'] += 0.10  # Tambah alokasi CPU untuk programming (10%)
-            allocations['SSD'] += 0.05  # Tambah sedikit alokasi SSD untuk kecepatan (5%)
-            allocations['Monitor'] = 0.05  # Alokasikan sedikit budget untuk monitor (5%)
+    elif kebutuhan == 'Rendering/Editing Video':
+        allocations['Processor'] += 0.15
+        allocations['RAM'] += 0.20
+        allocations['SSD'] += 0.05
 
-        elif kebutuhan == 'Streaming':
-            allocations['Processor'] += 0.10  # Tambah alokasi CPU untuk streaming (10%)
-            allocations['VGA'] += 0.10  # Tambah alokasi VGA untuk streaming (10%)
-            allocations['RAM'] += 0.05  # Tambah sedikit alokasi RAM untuk streaming (5%)
+    elif kebutuhan == 'Desain Grafis':
+        allocations['VGA'] += 0.15
+        allocations['Processor'] += 0.05
+        allocations['Monitor'] = 0.10
 
-        elif kebutuhan == 'Office Work':
-            allocations['Processor'] -= 0.05  # Kurangi alokasi CPU untuk office (5%)
-            allocations['VGA'] -= 0.05  # Kurangi alokasi VGA untuk office (5%)
-            allocations['SSD'] += 0.10  # Tambah alokasi SSD untuk office (10%)
+    elif kebutuhan == 'Programming/Coding':
+        allocations['Processor'] += 0.10
+        allocations['SSD'] += 0.05
+        allocations['Monitor'] = 0.05
 
-        # Normalisasi alokasi agar totalnya tetap 100%
-        total_allocation = sum(allocations.values())
-        allocations = {comp: allocation / total_allocation for comp, allocation in allocations.items()}
+    elif kebutuhan == 'Streaming':
+        allocations['Processor'] += 0.10
+        allocations['VGA'] += 0.10
+        allocations['RAM'] += 0.05
 
-        # ... (hitung rekomendasi) ...
-        
-        data = read_excel()
-        data = normalize_data(data)
-        recommendations = recommend_components(budget, allocations, data)
+    elif kebutuhan == 'Office Work':
+        allocations['Processor'] -= 0.05
+        allocations['VGA'] -= 0.05
+        allocations['SSD'] += 0.10
 
-    return render_template('index.html', components=components, recommendations=recommendations)
+    # Normalisasi alokasi agar totalnya tetap 100%
+    total_allocation = sum(allocations.values())
+    allocations = {comp: allocation / total_allocation for comp, allocation in allocations.items()}
 
-if __name__ == '__main__':
-    app.run(debug=True)
+    data = read_excel()
+    data = normalize_data(data)
+    recommendations = recommend_components(budget, allocations, data)
+
+    st.subheader('Recommended Components')
+    if recommendations:
+        for comp, part in recommendations.items():
+            st.write(f"**{comp}:**")
+            st.write(f"Brand: {part['Brand']}")
+            st.write(f"Specifications: {part['Specifications']}")
+            st.write(f"Price: {part['Price']}")
+    else:
+        st.write("No suitable components found within the given budget and allocations.")
