@@ -36,22 +36,19 @@ def recommend_components(budget, allocations, data):
 
 st.title('PC Recommendation')
 
-# Komponen
 components = ['Processor', 'Motherboard', 'RAM', 'SSD', 'VGA', 'PSU', 'Casing']
 recommendations = None
 
-# Form input
 with st.form(key='pc_form'):
-    budget = st.number_input('Total Budget:', min_value=0.0, step=100.0)
+    budget = st.number_input('Total Budget:', min_value=0, step=100, format="%d")
     allocations = {}
     
     for component in components:
-        allocations[component] = st.number_input(f'{component} Allocation (%):', min_value=0.0, max_value=100.0, step=5.0) / 100
+        allocations[component] = st.number_input(f'{component} Allocation (%):', min_value=0, max_value=100, step=1, format="%d") / 100
 
     kebutuhan = st.radio('Kebutuhan Utama:', ['Gaming', 'Rendering/Editing Video', 'Desain Grafis', 'Programming/Coding', 'Streaming', 'Office Work'])
     submit_button = st.form_submit_button(label='Get Recommendations')
 
-# Adjust allocations based on needs
 if submit_button:
     if kebutuhan == 'Gaming':
         allocations['VGA'] += 0.15
@@ -83,7 +80,6 @@ if submit_button:
         allocations['VGA'] -= 0.05
         allocations['SSD'] += 0.10
 
-    # Normalisasi alokasi agar totalnya tetap 100%
     total_allocation = sum(allocations.values())
     allocations = {comp: allocation / total_allocation for comp, allocation in allocations.items()}
 
