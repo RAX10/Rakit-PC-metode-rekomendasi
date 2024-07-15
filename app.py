@@ -4,17 +4,20 @@ from sklearn.preprocessing import MinMaxScaler
 from scipy.spatial.distance import cosine
 
 # Fungsi untuk membaca file Excel
+# Membaca data dari file Excel yang berisi dataset sparepart
 def read_excel():
     data = pd.read_excel('sparepart dataset.xlsx')
     return data
 
 # Normalisasi harga untuk setiap komponen
+# Menggunakan MinMaxScaler untuk normalisasi harga komponen agar berada dalam rentang [0, 1]
 def normalize_data(data):
     scaler = MinMaxScaler()
     data['Normalized_Price'] = scaler.fit_transform(data[['Price']])
     return data
 
 # Rekomendasi komponen berdasarkan cosine similarity
+# Merekomendasikan komponen berdasarkan kesesuaian harga dan alokasi budget menggunakan cosine similarity
 def recommend_components(budget, allocations, data):
     components = ['Processor', 'Motherboard', 'RAM', 'SSD', 'VGA', 'PSU', 'Casing']
     component_data = {comp: data[data['Tipe'] == comp] for comp in components}
@@ -27,6 +30,7 @@ def recommend_components(budget, allocations, data):
         if suitable_parts.empty:
             continue
         
+        # Menghitung jarak cosine untuk menemukan part yang paling cocok
         distances = suitable_parts['Normalized_Price'].apply(lambda x: cosine([x], [allocated_budget / budget]))
         best_part_index = distances.idxmin()
         best_part = suitable_parts.loc[best_part_index]
@@ -34,27 +38,33 @@ def recommend_components(budget, allocations, data):
         recommended_components[comp] = best_part
     return recommended_components
 
+# Mengatur judul aplikasi Streamlit
 st.title('PC Recommendation')
 
 components = ['Processor', 'Motherboard', 'RAM', 'SSD', 'VGA', 'PSU', 'Casing']
 recommendations = None
 
+# Membuat form input untuk menerima budget dan alokasi budget untuk tiap komponen
 with st.form(key='pc_form'):
     budget = st.number_input('Total Budget (dalam rupiah):', min_value=0, step=100000, format="%d")
     allocations = {}
     total_allocation = 0
 
+    # Input persentase alokasi budget untuk setiap komponen
     for component in components:
         allocation = st.number_input(f'{component} Allocation (%):', min_value=0, max_value=100, step=1, format="%d")
         allocations[component] = allocation / 100
         total_allocation += allocation
 
+    # Menampilkan sisa alokasi budget
     sisa_alokasi = 100 - total_allocation
     st.markdown(f'**Sisa Alokasi (%): {sisa_alokasi}**')
 
+    # Input kebutuhan utama untuk menyesuaikan alokasi budget
     kebutuhan = st.radio('Kebutuhan Utama:', ['Gaming', 'Rendering/Editing Video', 'Desain Grafis', 'Programming/Coding', 'Streaming', 'Office Work'])
     submit_button = st.form_submit_button(label='Get Recommendations')
 
+# Mengatur alokasi budget berdasarkan kebutuhan utama
 if submit_button:
     if kebutuhan == 'Gaming':
         allocations['VGA'] += 0.15
@@ -86,13 +96,16 @@ if submit_button:
         allocations['VGA'] -= 0.05
         allocations['SSD'] += 0.10
 
+    # Menormalkan alokasi budget kembali ke dalam bentuk persentase total 100%
     total_allocation = sum(allocations.values())
     allocations = {comp: allocation / total_allocation for comp, allocation in allocations.items()}
 
+    # Membaca data, normalisasi, dan menghasilkan rekomendasi
     data = read_excel()
     data = normalize_data(data)
     recommendations = recommend_components(budget, allocations, data)
 
+    # Menampilkan komponen yang direkomendasikan
     st.subheader('Recommended Components')
     if recommendations:
         # Membuat DataFrame dari rekomendasi
