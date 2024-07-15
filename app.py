@@ -40,7 +40,7 @@ components = ['Processor', 'Motherboard', 'RAM', 'SSD', 'VGA', 'PSU', 'Casing']
 recommendations = None
 
 with st.form(key='pc_form'):
-    budget = st.number_input('Total Budget:', min_value=0, step=100, format="%d")
+    budget = st.number_input('Total Budget (dalam rupiah):', min_value=0, step=100000, format="%d")
     allocations = {}
     total_allocation = 0
 
